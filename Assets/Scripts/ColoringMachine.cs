@@ -9,16 +9,8 @@ public class ColoringMachine : MonoBehaviour
     [SerializeField] private ParticleSystem particles;
     [SerializeField] private MeshRenderer[] objectsToDisplayColor;
 
-    private IEnumerator TestCoroutine()
-    {
-        yield return new WaitForSeconds(2);
-        ColorTargets();
-    }
-
     private void Awake()
     {
-        StartCoroutine(TestCoroutine());
-        currentColor = Color.green;
         SetColor(currentColor);
     }
 
@@ -46,6 +38,7 @@ public class ColoringMachine : MonoBehaviour
 
     public void SetColor(Color color)
     {
+        color.a = 1;
         ParticleSystem.MainModule main = particles.main;
         main.startColor = color;
         currentColor = color;

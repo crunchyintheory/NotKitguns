@@ -6,7 +6,7 @@ public class Colorable : MonoBehaviour
 {
     private MeshRenderer meshRenderer;
     private Material baseMaterial;
-    [SerializeField] private Color _currentColor;
+    [SerializeField] private Color _currentColor = Color.white;
 
     public Color Color { get { return _currentColor; } private set { _currentColor = value; } }
 
@@ -14,7 +14,7 @@ public class Colorable : MonoBehaviour
     {
         meshRenderer = GetComponent<MeshRenderer>();
         baseMaterial = meshRenderer.material;
-        Color = baseMaterial.color;
+        meshRenderer.material.color = Color;
     }
 
     public void SetColor(Color color)

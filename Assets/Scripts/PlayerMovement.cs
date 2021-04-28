@@ -4,32 +4,100 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
-    [SerializeField] CharacterController _controller;
-    [SerializeField] Transform _groundCheck;
-    [SerializeField] LayerMask _groundMask;
-    [SerializeField] LayerMask _ladderMask;
+    [SerializeField] private CharacterController _controller;
+    [SerializeField] private Transform _groundCheck;
+    [SerializeField] private LayerMask _groundMask;
+    [SerializeField] private LayerMask _ladderMask;
 
-    [SerializeField] float _speed = 12;
-    [SerializeField] float _jumpHeight = 3;
+    [SerializeField] private float _speed = 12;
+    [SerializeField] private float _jumpHeight = 3;
 
-    [SerializeField] float _groundDistance = 0.4f;
+    [SerializeField] private float _groundDistance = 0.4f;
 
-    [SerializeField] AudioSource _audio;
-    [SerializeField] AudioClip _landingsfx;
+    [SerializeField] private AudioSource _audio;
+    [SerializeField] private AudioClip _landingsfx;
+
+    [SerializeField] new private Camera camera;
+    [SerializeField] private LayerMask pickupLayer;
+    [SerializeField] private LayerMask interactableLayer;
 
     public Vector3 _velocity;
-    bool _isGrounded;
-    bool _isClimbing;
-    byte _dashState;
+    private bool _isGrounded;
+    private bool _isClimbing;
+    private byte _dashState;
 
     public bool _locked;
 
+    private GameObject pickup;
+    private GameObject onCursor;
+    private bool pickupOnCursor;
+
     public CharacterController Controller { get { return _controller; } }
+
+    private IEnumerator PickupDetection()
+    {
+        while (true)
+        {
+            if (pickup != null) yield return null;
+            if (Physics.Raycast(
+                    origin: camera.transform.position,
+                    direction: camera.transform.forward,
+                    maxDistance: 10,
+                    layerMask: interactableLayer,
+                    hitInfo: out RaycastHit hit))
+            {
+                pickupOnCursor = (pickupLayer.value & (1 << hit.collider.gameObject.layer)) > 0;
+                onCursor = hit.collider.gameObject;
+            }
+            else onCursor = null;
+            for (int i = 0; i < 10; i++)
+                yield return new WaitForEndOfFrame();
+        }
+    }
 
     private void Awake()
     {
+        camera = GetComponentInChildren<Camera>();
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+        StartCoroutine(PickupDetection());
+    }
+
+    private void Interact()
+    {
+        if (pickup == null)
+        {
+            if (onCursor != null)
+                if (pickupOnCursor)
+                    Pickup(onCursor);
+                else
+                    Interact(onCursor);
+        }
+        else
+            Drop();
+    }
+
+    private void Interact(GameObject interactable)
+    {
+        IInteractable c = interactable.GetComponent<IInteractable>();
+        if(c != null) c.Interact();
+    }
+
+    private void Pickup(GameObject pickup)
+    {
+        this.pickup = pickup;
+        Rigidbody rb = pickup.GetComponent<Rigidbody>();
+        if (rb != null)
+            rb.useGravity = false;
+        onCursor = null;
+    }
+
+    private void Drop()
+    {
+        Rigidbody rb = pickup.GetComponent<Rigidbody>();
+        if (rb != null)
+            rb.useGravity = true;
+        pickup = null;
     }
 
     private void Update()
@@ -50,6 +118,9 @@ public class PlayerMovement : MonoBehaviour
 
         if (Input.GetKeyUp(KeyCode.Q))
             Application.Quit();
+
+        if (Input.GetKeyUp(KeyCode.E))
+            Interact();
 
         //Ground check
 
@@ -118,6 +189,12 @@ public class PlayerMovement : MonoBehaviour
         if (transform.position.y <= -100)
         {
             Destroy(gameObject);
+        }
+
+        if(pickup != null)
+        {
+            pickup.transform.position = camera.transform.position + (camera.transform.forward * 4);
+            pickup.transform.rotation = camera.transform.rotation;
         }
     }
 

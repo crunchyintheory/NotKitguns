@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 8993612529916959522}
   - component: {fileID: 8993612529916959523}
   - component: {fileID: 8993612529916959521}
-  m_Layer: 12
+  m_Layer: 9
   m_Name: Player
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -68,7 +68,7 @@ MonoBehaviour:
   _groundCheck: {fileID: 8993612530826130996}
   _groundMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 1
   _ladderMask:
     serializedVersion: 2
     m_Bits: 0
@@ -77,6 +77,13 @@ MonoBehaviour:
   _groundDistance: 0.3
   _audio: {fileID: 0}
   _landingsfx: {fileID: 8300000, guid: 0c045b64ce7ade544a91340f8acdce66, type: 3}
+  camera: {fileID: 0}
+  pickupLayer:
+    serializedVersion: 2
+    m_Bits: 256
+  interactableLayer:
+    serializedVersion: 2
+    m_Bits: 257
   _velocity: {x: 0, y: 0, z: 0}
   _locked: 0
 --- !u!1 &8993612530826130997

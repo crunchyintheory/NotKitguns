@@ -142,8 +142,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   currentColor: {r: 1, g: 1, b: 1, a: 1}
   particles: {fileID: 5968739097752016489}
-  colorDisplayMaterial: {fileID: 2100000, guid: 0a408401bd31133488b84cbac54bd72c,
-    type: 2}
+  objectsToDisplayColor:
+  - {fileID: 5968739096895246887}
+  - {fileID: 5968739097677077638}
+  - {fileID: 5968739095948757794}
 --- !u!1 &5968739096041235047
 GameObject:
   m_ObjectHideFlags: 0
@@ -250,7 +252,7 @@ GameObject:
   - component: {fileID: 5968739096132394964}
   - component: {fileID: 5968739096132394955}
   - component: {fileID: 5968739096132394966}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: BoundingArea
   m_TagString: Untagged
   m_Icon: {fileID: 0}
