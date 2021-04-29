@@ -7,10 +7,19 @@ public class ColoringMachine : MonoBehaviour
     private List<Colorable> targets = new List<Colorable>();
     [SerializeField] private Color currentColor = Color.white;
     [SerializeField] private ParticleSystem particles;
+    [SerializeField] private ParticleSystem absorbParticles;
     [SerializeField] private MeshRenderer[] objectsToDisplayColor;
+
+    [SerializeField] private AudioClip absorbSound;
+    [SerializeField] private AudioClip colorSound;
+
+    private AudioSource audioSource;
+    private ParticleSystem[] allParticles;
 
     private void Awake()
     {
+        audioSource = GetComponent<AudioSource>();
+        allParticles = new ParticleSystem[]{ particles, absorbParticles };
         SetColor(currentColor);
     }
 
@@ -31,6 +40,7 @@ public class ColoringMachine : MonoBehaviour
 
     public void ColorTargets()
     {
+        audioSource.PlayOneShot(colorSound);
         particles.Play();
         foreach (Colorable colorable in targets)
             colorable.SetColor(currentColor);
@@ -39,8 +49,11 @@ public class ColoringMachine : MonoBehaviour
     public void SetColor(Color color)
     {
         color.a = 1;
-        ParticleSystem.MainModule main = particles.main;
-        main.startColor = color;
+        foreach(ParticleSystem system in allParticles)
+        {
+            ParticleSystem.MainModule main = system.main;
+            main.startColor = color;
+        }
         currentColor = color;
         foreach(MeshRenderer r in objectsToDisplayColor)
         {
@@ -51,7 +64,9 @@ public class ColoringMachine : MonoBehaviour
 
     public void AbsorbObject(Colorable colorable)
     {
+        audioSource.PlayOneShot(absorbSound);
         SetColor(colorable.Color);
         Destroy(colorable.gameObject);
+        absorbParticles.Play();
     }
 }
